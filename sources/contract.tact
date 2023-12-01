@@ -8,6 +8,7 @@ contract AA {
     }
 
     fun getJettonWallet(owner: Address): StateInit {
+        // https://github.com/EmelyanenkoK/jetton_dao/blob/02fed5d124effd57ea50be77044b209ad800a621/contracts/jetton-utils.func#L5
         let data: Cell = beginCell()
                             .storeCoins(0)                            
                             .storeAddress(owner)
