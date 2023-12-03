@@ -1,10 +1,14 @@
 contract AA {
     walletCode: Cell;
     MinterAddress: Address;
+    itemCode: Cell;
+    CollectionAddress: Address;
 
-    init(_walletCode: Cell, MinterAddress: Address) {
+    init(_walletCode: Cell, MinterAddress: Address, _itemCode: Cell, CollectionAddress: Address) {
         self.walletCode = _walletCode;
         self.MinterAddress = MinterAddress;
+        self.itemCode = _itemCode;
+        self.CollectionAddress = CollectionAddress; 
     }
 
     fun getJettonWallet(owner: Address): StateInit {
@@ -29,6 +33,24 @@ contract AA {
     get fun get_wallet_code(): Cell {
         return self.walletCode;
     }
+    // ========================================================================================================
+    fun getNFTItemAddress(item_index: Int): StateInit {
+        let data: Cell = beginCell()
+                            .storeUint(item_index, 256)
+                            .storeSlice(self.CollectionAddress.asSlice())
+                            .storeRef(beginCell().endCell())
+                        .endCell();
+        let itemInit: StateInit = StateInit {
+            data: data,
+            code: self.itemCode
+        }; 
+        return itemInit;
+    }
+
+    get fun get_NFTItemAddressByIndex(item_index: Int): Address {
+        return contractAddress(self.getNFTItemAddress(item_index));
+    }
+    // ========================================================================================================
 
     receive("C") {
         self.forward(self.get_WalletAddress(sender()), "Yes".asComment(), false, null);
